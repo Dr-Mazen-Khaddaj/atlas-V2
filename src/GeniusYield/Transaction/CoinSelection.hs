@@ -171,7 +171,7 @@ selectInputs
                         selectionConstraints
                         selectionParams
         let inRefs     = S.fromList $ gyTxInTxOutRef . gyTxInDet <$> existingInputs
-            changeOuts = map
+            changeOuts = (:[]) . head $ map
                 (\(fromTokenBundle -> tokenChange) -> adjustTxOut minimumUTxOF (GYTxOut changeAddr tokenChange Nothing Nothing))
                 changeGenerated
             foldHelper acc (CBalanceInternal.WalletUTxO {txIn}, _)
