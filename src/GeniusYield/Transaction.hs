@@ -68,7 +68,7 @@ module GeniusYield.Transaction (
 
 import           Control.Monad.Trans.Except            (runExceptT, throwE)
 import           Data.Foldable                         (for_)
-import           Data.List                             (nub, partition, find)
+import           Data.List                             (nub)
 import qualified Data.Map                              as Map
 import           Data.Ratio                            ((%))
 import           GHC.Records                           (getField)
@@ -161,19 +161,8 @@ buildUnsignedTxBody :: forall m v.
         -> Maybe GYSlot
         -> Set GYPubKeyHash
         -> m (Either BuildTxException GYTxBody)
-buildUnsignedTxBody env cstrat insOld allOuts refIns mmint lb ub signers = buildTxLoop cstrat extraLovelaceStart
+buildUnsignedTxBody env cstrat insOld outsOld refIns mmint lb ub signers = buildTxLoop cstrat extraLovelaceStart
   where
-    -- 
-    changeAddr = gyBTxEnvChangeAddr env
-    (allChangeOuts, allOtherOuts) = partition ((== changeAddr) . gyTxOutAddress) allOuts
-    singChangeOut   = GYTxOut
-                        { gyTxOutAddress    = changeAddr
-                        , gyTxOutValue      = mconcat  $ gyTxOutValue <$> allChangeOuts
-                        , gyTxOutDatum      = fromJust . gyTxOutDatum <$> find (isJust . gyTxOutDatum) allChangeOuts
-                        , gyTxOutRefS       = Nothing
-                        }
-    outsOld = singChangeOut : allOtherOuts
-    -- 
     -- TODO: decide whether inline datums /can/ be used for this transaction.
     -- Currently we don't use them ever.
     useInlineDatums :: Bool
@@ -291,18 +280,7 @@ balanceTxStep
                                             $ Api.S.protocolParamMaxValueSize pp
                     }
                 cstrat
-            -- 
-            let allOuts                         = adjustedOuts ++ changeOuts
-                (allChangeOuts, allOtherOuts)   = partition ((== changeAddr) . gyTxOutAddress) allOuts
-                singChangeOut   = GYTxOut
-                                    { gyTxOutAddress    = changeAddr
-                                    , gyTxOutValue      = mconcat  $ gyTxOutValue <$> allChangeOuts
-                                    , gyTxOutDatum      = fromJust . gyTxOutDatum <$> find (isJust . gyTxOutDatum) allChangeOuts
-                                    , gyTxOutRefS       = Nothing
-                                    }
-                finalOuts                       = singChangeOut : allOtherOuts
-            pure (ins ++ addIns, collaterals, finalOuts)
-            -- pure (ins ++ addIns, collaterals, adjustedOuts ++ changeOuts)
+            pure (ins ++ addIns, collaterals, adjustedOuts ++ changeOuts)
   where
     isScriptWitness GYTxInWitnessKey      = False
     isScriptWitness GYTxInWitnessScript{} = True
