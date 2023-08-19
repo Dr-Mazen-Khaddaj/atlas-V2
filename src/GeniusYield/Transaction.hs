@@ -164,6 +164,7 @@ buildUnsignedTxBody :: forall m v.
 buildUnsignedTxBody env cstrat insOld allOuts refIns mmint lb ub signers = buildTxLoop cstrat extraLovelaceStart
   where
     -- 
+    changeAddr = gyBTxEnvChangeAddr env
     (allChangeOuts, allOtherOuts) = partition ((== changeAddr) . gyTxOutAddress) allOuts
     singChangeOut   = GYTxOut
                         { gyTxOutAddress    = changeAddr
