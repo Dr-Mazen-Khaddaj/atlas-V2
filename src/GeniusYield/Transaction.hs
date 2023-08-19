@@ -280,7 +280,18 @@ balanceTxStep
                                             $ Api.S.protocolParamMaxValueSize pp
                     }
                 cstrat
-            pure (ins ++ addIns, collaterals, adjustedOuts ++ changeOuts)
+            -- 
+            let allOuts                         = adjustedOuts ++ changeOuts
+                (allChangeOuts, allOtherOuts)   = partition ((== changeAddr) . gyTxOutAddress) allOuts
+                singChangeOut   = GYTxOut
+                                    { gyTxOutAddress    = changeAddr
+                                    , gyTxOutValue      = mconcat  $ gyTxOutValue <$> allChangeOuts
+                                    , gyTxOutDatum      = fromJust . gyTxOutDatum <$> find (isJust . gyTxOutDatum) allChangeOuts
+                                    , gyTxOutRefS       = Nothing
+                                    }
+                finalOuts                       = singChangeOut : allOtherOuts
+            pure (ins ++ addIns, collaterals, finalOuts)
+            -- pure (ins ++ addIns, collaterals, adjustedOuts ++ changeOuts)
   where
     isScriptWitness GYTxInWitnessKey      = False
     isScriptWitness GYTxInWitnessScript{} = True
