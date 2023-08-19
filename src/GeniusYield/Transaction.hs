@@ -164,14 +164,14 @@ buildUnsignedTxBody :: forall m v.
 buildUnsignedTxBody env cstrat insOld allOuts refIns mmint lb ub signers = buildTxLoop cstrat extraLovelaceStart
   where
     -- 
-    let (allChangeOuts, allOtherOuts) = partition ((== changeAddr) . gyTxOutAddress) allOuts
-        singChangeOut   = GYTxOut
-                            { gyTxOutAddress    = changeAddr
-                            , gyTxOutValue      = mconcat  $ gyTxOutValue <$> allChangeOuts
-                            , gyTxOutDatum      = fromJust . gyTxOutDatum <$> find (isJust . gyTxOutDatum) allChangeOuts
-                            , gyTxOutRefS       = Nothing
-                            }
-        outsOld = singChangeOut : allOtherOuts
+    (allChangeOuts, allOtherOuts) = partition ((== changeAddr) . gyTxOutAddress) allOuts
+    singChangeOut   = GYTxOut
+                        { gyTxOutAddress    = changeAddr
+                        , gyTxOutValue      = mconcat  $ gyTxOutValue <$> allChangeOuts
+                        , gyTxOutDatum      = fromJust . gyTxOutDatum <$> find (isJust . gyTxOutDatum) allChangeOuts
+                        , gyTxOutRefS       = Nothing
+                        }
+    outsOld = singChangeOut : allOtherOuts
     -- 
     -- TODO: decide whether inline datums /can/ be used for this transaction.
     -- Currently we don't use them ever.
