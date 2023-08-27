@@ -192,10 +192,6 @@ library
     , vector                 ^>=0.12.3.1
     , witherable             ^>=0.4.2
 
--- Dependencies whose version is fixed by @cabal.project@ file.
-  build-depends:
-    , maestro-sdk
-
   -- Cardano libraries which are not on hackage. Their version is pinned in @cabal.project@ file.
   build-depends:
     , cardano-addresses
