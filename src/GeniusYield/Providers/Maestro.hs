@@ -663,6 +663,6 @@ maestroLookupDatum env dh = do
 networkIdToMaestroUrl :: GYNetworkId -> String
 networkIdToMaestroUrl GYMainnet        = "https://mainnet.gomaestro-api.org/"
 networkIdToMaestroUrl GYTestnetPreprod = "https://preprod.gomaestro-api.org/"
-networkIdToMaestroUrl GYTestnetPreview = "https://preview.gomaestro-api.org/v0"
+networkIdToMaestroUrl GYTestnetPreview = "https://preview.gomaestro-api.org/v1"
 networkIdToMaestroUrl GYTestnetLegacy  = error "Only preprod and mainnet networks are supported by Maestro"
 networkIdToMaestroUrl GYPrivnet        = error "Only preprod and mainnet networks are supported by Maestro"
